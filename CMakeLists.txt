@@ -1,18 +1,13 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(test_zhang)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-if(DEFINED ${eigen_DIR})
-    find_package(eigen3)
-endif()
+set(eigen_DIR "D:/eigen3")
+find_package(eigen3 REQUIRED)
 
-if(NOT DEFINED ${eigen_DIR})
-    set(eigen_DIR "D:/eigen3")
-endif()
-
-set(OpenCV_DIR "D:/opencv")
+#set(OpenCV_DIR "D:/opencv")
 find_package(OpenCV REQUIRED)
-
 
 include_directories(
     src/
