@@ -21,7 +21,7 @@ include_directories(
 )
 
 add_executable(test1 src/test1.cpp)
-target_link_libraries(test1 ${EIGEN3_LIBS})
+target_link_libraries(test1 ${eigen_LIBS})
 target_link_libraries(test1 ${OpenCV_LIBS})
 
 

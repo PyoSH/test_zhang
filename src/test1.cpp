@@ -173,8 +173,6 @@ std::vector<Eigen::Matrix3d> ComputeHomography8Point(std::vector<Eigen::Matrix<d
     return Hs;
 }
 
-std::string path = "";
-
 int main(int argc, char **argv)
 {
     std::vector<cv::Mat> images;
