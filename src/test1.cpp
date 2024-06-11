@@ -1,11 +1,11 @@
 #include <iostream>
 #include <vector>
-
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <opencv2/core/core.hpp>
-//#include <opencv2/core/eigen.hpp>
+#include <opencv2/core/eigen.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
+
 
 void GetChessboardCorners(std::vector <Eigen::Matrix<double, 48, 2>> &pixel_coners){
     Eigen::Matrix<double, 48, 2> c1,c2,c3,c4,c5;
