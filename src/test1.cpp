@@ -173,15 +173,56 @@ std::vector<Eigen::Matrix3d> ComputeHomography8Point(std::vector<Eigen::Matrix<d
     return Hs;
 }
 
+std::vector<Eigen::Vector3d> Project3Dto2D(Eigen::Matrix3d K, Eigen::Matrix3d R, Eigen::Vector3d t, Eigen::Matrix<double, 48, 4> world_points){
+	std::vector<Eigen::Vector3d> projected_points(48);
+
+	Eigen::MatrixXd H(3,4);
+	H.col(0) = R.col(0);
+	H.col(1) = R.col(1);
+	H.col(2) = R.col(2);
+	H.col(3) = t.transpose();
+
+	Eigen::Vector4d curr_world_point;
+	Eigen::Vector3d curr_px_point;
+	for(int i=0; i< world_points.rows(); i++){
+		curr_world_point = world_points.row(i);
+		curr_px_point = K * H * curr_world_point;
+		curr_px_point = curr_px_point / curr_px_point(2);
+		projected_points.push_back(curr_px_point);
+	}
+
+	return projected_points;
+}
+
+void DrawPoints(std::vector<Eigen::Vector3d> points_per_image, cv::Mat& curr_img){
+	cv::Mat img = curr_img;
+
+	for(int i=0; i<points_per_image.size(); i++){
+		cv::Point location_pt(points_per_image[i](0), points_per_image[i](1));
+		cv::circle(img, location_pt, 5, 255, -1);
+	}
+
+	cv::imshow("12901", img);
+	cv::waitKey(0);
+}
+
 int main(int argc, char **argv)
 {
     std::vector<cv::Mat> images;
 
     // 이미지 불러오기
     for(int i=1; i<=5; i++){
-        std::string curr_img = "D:/test_zhang/imgs/"+std::to_string(i)+".jpg";
+        std::string curr_img = "/home/masterpyo/eclipse-workspace/test_zhang-master/imgs/"+std::to_string(i)+".jpg";
         cv::Mat img = cv::imread(curr_img, cv::IMREAD_GRAYSCALE);
-        images.push_back(img);
+        if(img.empty())	{
+        	std::cout<< "이미지가 없어부러요" << std::endl;
+        	return -1;
+        }
+        else{
+        	std::cout<< "이미지가 있으니 저장해유" << std::endl;
+        	images.push_back(img);
+        }
+
     }
 
     // chessboard의 교차점 검출
@@ -204,9 +245,10 @@ int main(int argc, char **argv)
 
     // Homography로부터 K 구하기
     Eigen::Matrix<double, 10, 6> A;
+
     for(int i=0; i<5; i++){
         Eigen::Matrix<double, 3, 3> H = Hs[i];
-        Eigen::Matrix<double, 6, 1> a1, a2; // 나중에 9개 요소로도 해보고 차이 있는지 확인!
+        Eigen::Matrix<double, 6, 1> a1, a2;
 
         double h1 = H(0,0);
         double h2 = H(0,1);
@@ -263,6 +305,11 @@ int main(int argc, char **argv)
         std::cout << "R \n" << R << std::endl;
         std::cout << "t\n" << t<< std::endl;
         std::cout << "---------------------------------" << std::endl;
+
+
+        // 점 재투영해서 띄우기
+		std::vector<Eigen::Vector3d> projected_pt = Project3Dto2D(K, R, t, world_points);
+		DrawPoints(projected_pt, images[i]);
     }
 
     return 0;
